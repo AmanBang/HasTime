@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -51,6 +52,11 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+    implementation(libs.room.ktx)
+    kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.glance:glance:1.1.0")
     implementation("androidx.glance:glance-appwidget:1.1.0")
     implementation(libs.androidx.core.ktx)
@@ -65,6 +71,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.work.manager)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
