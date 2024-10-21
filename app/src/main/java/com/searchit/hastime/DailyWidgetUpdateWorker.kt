@@ -55,7 +55,7 @@ class DailyWidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             val daysLeft = diff / (1000 * 60 * 60 * 24)
             val hoursLeft = (diff / (1000 * 60 * 60)) % 24
             val minutesLeft = (diff / (1000 * 60)) % 60
-            "$daysLeft days, $hoursLeft hours, $minutesLeft minutes left"
+            "$daysLeft Days, $hoursLeft hours, $minutesLeft minutes left"
         } else {
             "Date is in the past"
         }
