@@ -29,12 +29,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
+import androidx.work.BackoffPolicy
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.searchit.hastime.Room.AppDatabase
 import com.searchit.hastime.Room.Dao.SelectedDateDao
 import com.searchit.hastime.Room.Entity.SelectedDateEntity
+import com.searchit.hastime.Worker.MyWorker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
@@ -53,6 +60,21 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApp()
         }
+
+        val workRequest = PeriodicWorkRequestBuilder<MyWorker>(15, TimeUnit.MINUTES)
+            .setBackoffCriteria(
+                BackoffPolicy.EXPONENTIAL,  // Can also use BackoffPolicy.LINEAR for linear delays
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,  // Minimum delay (e.g., 10 seconds)
+                TimeUnit.MILLISECONDS
+            )
+            .build()
+
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork(
+                "MyPeriodicWork",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+            )
     }
 
     @Composable

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "715531865821",
+    "project_id": "hastime2024",
+    "storage_bucket": "hastime2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715531865821:android:8e321aa3a30e79649e5534",
+        "android_client_info": {
+          "package_name": "com.searchit.hastime"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpqEVaDJoIfdn56HzzYiDzSgMCpOF0Wuo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

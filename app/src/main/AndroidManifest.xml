@@ -35,6 +35,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".service.MyForegroundService"
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:foregroundServiceType="dataSync"/>
+
+        <receiver android:name=".receiver.ScreenStateReceiver" />
+        <receiver android:name=".Util.NetworkUtil" />
     </application>
 
 </manifest>

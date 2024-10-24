@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -54,6 +55,7 @@ android {
 dependencies {
 
     implementation(libs.room.runtime)
+    implementation(libs.firebase.database)
     annotationProcessor(libs.room.compiler)
     implementation(libs.room.ktx)
     kapt("androidx.room:room-compiler:2.6.1")

@@ -44,97 +44,10 @@ class TimeLeftWidget : AppWidgetProvider() {
 
         if (!isRunning) {
             isRunning = true
-//            handler.post(updateRunnable(context))
             scheduleDailyWidgetUpdate(context)
         }
 
-//        CoroutineScope(Dispatchers.IO).launch {
-
-
-//            val remainingTime = calculateRemainingTime(context)
-//            // Update each widget instance with the fetched data
-//            for (appWidgetId in appWidgetIds) {
-//                updateAppWidget(context, appWidgetManager, appWidgetId, remainingTime)
-//            }
-//        }
     }
-
-
-    // Define the worker inline
-//    class DailyWidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
-//
-//        private lateinit var db: AppDatabase
-//
-//        override suspend fun doWork(): Result {
-//            return withContext(Dispatchers.IO) {
-//                // Fetch data and update the widget
-//                val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
-//                val thisWidget = ComponentName(applicationContext, TimeLeftWidget::class.java)
-//                val appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget)
-//
-//                // Fetch remaining time from your source
-//                val remainingTime = calculateRemainingTime(applicationContext)
-//
-//                // Update each widget instance with the fetched data
-//                for (appWidgetId in appWidgetIds) {
-//                    updateAppWidget(applicationContext, appWidgetManager, appWidgetId, remainingTime)
-//                }
-//
-//                Result.success()
-//            }
-//        }
-//
-//        private suspend fun calculateRemainingTime(context: Context): String {
-//            // Initialize Room database
-//            db = Room.databaseBuilder(
-//                context,
-//                AppDatabase::class.java, "database-name"
-//            ).build()
-//            val dataDao = db.selectedDateDao();
-//
-//            // Fetch the selected date from Room
-//            val selectedDateEntity = dataDao.getSelectedDate() // This should be a suspend function
-//
-//            if (selectedDateEntity == null) return "No date set"
-//
-//            val selectedDateInMillis = selectedDateEntity.dateInMillis
-//            val currentTime = Calendar.getInstance().timeInMillis
-//            val diff = selectedDateInMillis - currentTime
-//
-//            return if (diff > 0) {
-//                val daysLeft = diff / (1000 * 60 * 60 * 24)
-//                val hoursLeft = (diff / (1000 * 60 * 60)) % 24
-//                val minutesLeft = (diff / (1000 * 60)) % 60
-//                "$daysLeft days, $hoursLeft hours, $minutesLeft minutes left"
-//            } else {
-//                "Date is in the past"
-//            }
-//        }
-//
-//    }
-
-//    private fun updateRunnable(context: Context): Runnable {
-//        return object : Runnable {
-//            override fun run() {
-//                // Fetch data from Room in the background
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    val remainingTime = calculateRemainingTime(context)
-//
-//                    // Get widget manager and component name for updating all widget instances
-//                    val appWidgetManager = AppWidgetManager.getInstance(context)
-//                    val thisWidget = ComponentName(context, TimeLeftWidget::class.java)
-//                    val appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget)
-//
-//                    // Update each widget instance with the fetched data
-//                    for (appWidgetId in appWidgetIds) {
-//                        updateAppWidget(context, appWidgetManager, appWidgetId, remainingTime)
-//                    }
-//                }
-//                // Schedule the next update in 1 second
-//                handler.postDelayed(this, 1000)
-//            }
-//        }
-//    }
 
     // Function to schedule daily widget update
     fun scheduleDailyWidgetUpdate(context: Context) {
