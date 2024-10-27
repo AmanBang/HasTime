@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.searchit.hastime" />
+                  <option name="mobileSdkAppId" value="1:715531865821:android:8e321aa3a30e79649e5534" />
+                  <option name="projectId" value="hastime2024" />
+                  <option name="projectNumber" value="715531865821" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

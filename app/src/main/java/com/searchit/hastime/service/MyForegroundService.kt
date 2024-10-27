@@ -23,6 +23,7 @@ class MyForegroundService : Service() {
     private lateinit var networkUtil: NetworkUtil
     private val handler = Handler(Looper.getMainLooper())  // Handler to schedule service stop
     private val CHANNEL_ID = "MyForegroundServiceChannel"
+    private val NOTIFICATION_ID = 1 // Notification ID must be an Int
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
@@ -32,7 +33,7 @@ class MyForegroundService : Service() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Foreground Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Channel for Foreground Service"
             }
@@ -54,17 +55,17 @@ class MyForegroundService : Service() {
         // Schedule the service to stop after 15 minutes (900000 milliseconds)
         handler.postDelayed({
             stopSelf()  // Stops the service after 15 minutes
-        }, 15 * 60 * 1000)  // 15 minutes in milliseconds
+        }, (1 * 60 * 1000)+40*1000)  // 14.40 minutes in milliseconds
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Foreground Service Running")
-            .setContentText("Monitoring screen and network events")
+            .setContentTitle("Has Time")
+            .setContentText("Quotes")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
 
-        startForeground(2, notification)
+        startForeground(NOTIFICATION_ID, notification)
 
         // Continue running as a foreground service
         return START_STICKY
@@ -74,6 +75,10 @@ class MyForegroundService : Service() {
         super.onDestroy()
         unregisterReceiver(screenStateReceiver)
         unregisterReceiver(networkUtil)
+
+        // Cancel the notification when the service is destroyed
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.cancel(NOTIFICATION_ID) // Cancel the notification
     }
 
     override fun onBind(intent: Intent?): IBinder? {

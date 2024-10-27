@@ -54,13 +54,20 @@ android {
 
 dependencies {
 
+    implementation("androidx.compose.ui:ui:1.5.1")
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.compose.material:material:1.5.1")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.5.1")
     implementation(libs.room.runtime)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore.ktx)
     annotationProcessor(libs.room.compiler)
     implementation(libs.room.ktx)
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.glance:glance:1.1.0")
     implementation("androidx.glance:glance-appwidget:1.1.0")
+    implementation("com.google.android.gms:play-services-auth:20.4.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

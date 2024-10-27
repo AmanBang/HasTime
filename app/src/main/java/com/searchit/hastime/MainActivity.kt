@@ -3,7 +3,9 @@ package com.searchit.hastime
 import android.app.DatePickerDialog
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,12 +44,24 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.searchit.hastime.auth.AuthActivity
 
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("AuthenticationActivity", "onCreate: FIrebase ")
+//        FirebaseApp.initializeApp(this)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        Log.i("AuthenticationActivity", "onCreate: FIrebase " + currentUser)
+
+        if (currentUser == null) {
+            startActivity(Intent(this, AuthActivity::class.java))
+            finish()
+        }
 
         // Initialize Room database and DAO
          db = Room.databaseBuilder(
@@ -60,23 +74,64 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApp()
         }
+        checkNotificationAccess()
+//        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+//        startActivity(intent)
 
-        val workRequest = PeriodicWorkRequestBuilder<MyWorker>(15, TimeUnit.MINUTES)
-            .setBackoffCriteria(
-                BackoffPolicy.EXPONENTIAL,  // Can also use BackoffPolicy.LINEAR for linear delays
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,  // Minimum delay (e.g., 10 seconds)
-                TimeUnit.MILLISECONDS
-            )
-            .build()
+        // Check if the WorkManager job is already scheduled
+        WorkManager.getInstance(this).getWorkInfosForUniqueWorkLiveData("MyPeriodicWork").observe(this) { workInfos ->
+            if (workInfos.isNullOrEmpty() || workInfos.all { it.state.isFinished }) {
+                // Only enqueue the work if it's not already scheduled or if previous work has finished
+                val workRequest = PeriodicWorkRequestBuilder<MyWorker>(15, TimeUnit.MINUTES)
+                    .setBackoffCriteria(
+                        BackoffPolicy.EXPONENTIAL,
+                        OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                        TimeUnit.MILLISECONDS
+                    )
+                    .build()
 
-        WorkManager.getInstance(this)
-            .enqueueUniquePeriodicWork(
-                "MyPeriodicWork",
-                ExistingPeriodicWorkPolicy.KEEP,
-                workRequest
-            )
+                WorkManager.getInstance(this)
+                    .enqueueUniquePeriodicWork(
+                        "MyPeriodicWork",
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        workRequest
+                    )
+                Log.i("WorkManager", "WorkManager is created.")
+
+            } else {
+                Log.i("WorkManager", "Work is already scheduled or running.")
+            }
+        }
+//        val workRequest = PeriodicWorkRequestBuilder<MyWorker>(15, TimeUnit.MINUTES)
+//            .setBackoffCriteria(
+//                BackoffPolicy.EXPONENTIAL,  // Can also use BackoffPolicy.LINEAR for linear delays
+//                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,  // Minimum delay (e.g., 10 seconds)
+//                TimeUnit.MILLISECONDS
+//            )
+//            .build()
+//
+//        WorkManager.getInstance(this)
+//            .enqueueUniquePeriodicWork(
+//                "MyPeriodicWork",
+//                ExistingPeriodicWorkPolicy.KEEP,
+//                workRequest
+//            )
+    }
+    fun checkNotificationAccess() {
+        if (!isNotificationServiceEnabled()) {
+            // Prompt the user to enable notification access
+            val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+            startActivity(intent)
+        } else {
+            // Access is enabled, you can proceed with your functionality
+        }
     }
 
+    private fun isNotificationServiceEnabled(): Boolean {
+        val pkgName = packageName
+        val flat = Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
+        return flat != null && flat.contains(pkgName)
+    }
     @Composable
     fun MyApp() {
         val context = LocalContext.current // Get the current context

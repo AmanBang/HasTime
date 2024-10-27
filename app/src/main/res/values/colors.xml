@@ -11,4 +11,11 @@
     <color name="light_blue_200">#FF81D4FA</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
+    <color name="colorPrimary">#6200EE</color>  <!-- Purple -->
+
+    <!-- Dark Primary Color -->
+    <color name="colorPrimaryDark">#3700B3</color>  <!-- Dark Purple -->
+
+    <!-- Accent Color -->
+    <color name="colorAccent">#03DAC5</color>  <!-- Teal -->
 </resources>

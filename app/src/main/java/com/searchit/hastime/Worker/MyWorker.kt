@@ -33,8 +33,6 @@ class MyWorker(context: Context, workerParams: WorkerParameters) : CoroutineWork
             val eventLogs: List<EventLog> = database.eventLogDao().getAllEventLogs()
             Log.i("MyWorker", "doWork: database")
 
-            // TODO: Sync eventLogs to Firebase (replace with your Firebase upload logic)
-
             if (eventLogs.isNotEmpty()) {
                 // Check if the device is connected to the internet
                 if (isInternetAvailable(applicationContext)) {
