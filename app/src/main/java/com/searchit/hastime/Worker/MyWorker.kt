@@ -8,6 +8,7 @@ import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.searchit.hastime.Room.MyDatabase
 import com.searchit.hastime.Room.model.EventLog
@@ -79,9 +80,10 @@ class MyWorker(context: Context, workerParams: WorkerParameters) : CoroutineWork
     private suspend fun uploadToFirebase(eventLogs: List<EventLog>): Boolean {
         return try {
             Log.i("uploadToFirebase", "In Firebase")
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
 
             val firebaseDatabase = FirebaseDatabase.getInstance()
-            val ref = firebaseDatabase.getReference("logs")
+            val ref = firebaseDatabase.getReference("users/$userId/logs")
             Log.i("uploadToFirebase", "got the Ref")
 
             for (event in eventLogs) {

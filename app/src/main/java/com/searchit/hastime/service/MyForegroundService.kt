@@ -55,7 +55,7 @@ class MyForegroundService : Service() {
         // Schedule the service to stop after 15 minutes (900000 milliseconds)
         handler.postDelayed({
             stopSelf()  // Stops the service after 15 minutes
-        }, (1 * 60 * 1000)+40*1000)  // 14.40 minutes in milliseconds
+        }, (13 * 60 * 1000)+40*1000)  // 14.40 minutes in milliseconds
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

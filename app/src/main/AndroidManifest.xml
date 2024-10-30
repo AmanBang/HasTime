@@ -58,6 +58,20 @@
 
         <receiver android:name=".receiver.ScreenStateReceiver" />
         <receiver android:name=".Util.NetworkUtil" />
+
+        <receiver android:name=".widget.MessageWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+        <service android:name=".widget.FirebaseUpdateService"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

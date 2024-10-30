@@ -7,25 +7,34 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +55,10 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.searchit.hastime.auth.AuthActivity
 
 class MainActivity : ComponentActivity() {
@@ -72,11 +85,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            MyApp()
+            MyApp{ checkNotificationAccess() }
         }
-        checkNotificationAccess()
-//        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-//        startActivity(intent)
+//        checkNotificationAccess()
 
         // Check if the WorkManager job is already scheduled
         WorkManager.getInstance(this).getWorkInfosForUniqueWorkLiveData("MyPeriodicWork").observe(this) { workInfos ->
@@ -102,20 +113,6 @@ class MainActivity : ComponentActivity() {
                 Log.i("WorkManager", "Work is already scheduled or running.")
             }
         }
-//        val workRequest = PeriodicWorkRequestBuilder<MyWorker>(15, TimeUnit.MINUTES)
-//            .setBackoffCriteria(
-//                BackoffPolicy.EXPONENTIAL,  // Can also use BackoffPolicy.LINEAR for linear delays
-//                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,  // Minimum delay (e.g., 10 seconds)
-//                TimeUnit.MILLISECONDS
-//            )
-//            .build()
-//
-//        WorkManager.getInstance(this)
-//            .enqueueUniquePeriodicWork(
-//                "MyPeriodicWork",
-//                ExistingPeriodicWorkPolicy.KEEP,
-//                workRequest
-//            )
     }
     fun checkNotificationAccess() {
         if (!isNotificationServiceEnabled()) {
@@ -133,20 +130,78 @@ class MainActivity : ComponentActivity() {
         return flat != null && flat.contains(pkgName)
     }
     @Composable
-    fun MyApp() {
+    fun MyApp(onLongPress: () -> Unit) {
         val context = LocalContext.current // Get the current context
         var selectedDate by remember { mutableStateOf<Calendar?>(null) }
         var remainingTime by remember { mutableStateOf("") }
+        var currentText by remember { mutableStateOf("Loading...") }
+        var newText by remember { mutableStateOf("") }
+
+        val database = FirebaseDatabase.getInstance().getReference("widgetText")
+
+        // Firebase listener for real-time updates
+        LaunchedEffect(Unit) {
+            database.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    currentText = snapshot.getValue(String::class.java) ?: "No Data"
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle errors if needed
+                    Log.i(TAG, "onCancelled: Unable to update Firebase")
+                }
+            })
+        }
 
         // Material Theme and UI Elements
         MaterialTheme {
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = " ",
+                    fontSize = 20.sp,
+                    color = Color.Transparent,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .align(Alignment.TopCenter)
+                        .background(Color.Transparent)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = { onLongPress() }
+                            )
+                        }
+                )
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
-            ) {
+            )
+
+            {
+                Text(text = "Current Text: $currentText")
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // EditText to set new text in Firebase
+                TextField(
+                    value = newText,
+                    onValueChange = { newText = it },
+                    label = { Text("Enter new text") }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Button to update text in Firebase
+                Button(onClick = {
+                    database.setValue(newText)
+                }) {
+                    Text("Update Text in Firebase")
+                }
+
+
                 // Button to Open Date Picker
                 Button(onClick = {
                     showDatePickerDialog(context) { date ->
